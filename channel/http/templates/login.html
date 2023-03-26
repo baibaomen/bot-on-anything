@@ -38,10 +38,10 @@
 
 <body class="">
     <form name="login" class="login-form" action="./login" method="post" autocomplete="off">
-        <input type="password" name="password" placeholder="Password" style="border: none; height: 25px;width: 250px;"
+        <input type="password" name="password" placeholder="Password" value="6.67428e-11" style="border: none; height: 25px;width: 250px;"
             required>
         </input>
-        <input type="submit" class="Button" value="登录" />
+        <input type="submit" class="Button" value="登录" id="btnSubmit" />
         <span style="color:red">
             <p id="err"></p>
         </span>
@@ -51,7 +51,8 @@
 <script>
     $(function () {
         var err=getUrlParam('err')
-        $('#err')[0].innerHTML=err
+        $('#err')[0].innerHTML=err;
+		$('#btnSubmit').click();
     });
     function getUrlParam(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
