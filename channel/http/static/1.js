@@ -11,19 +11,36 @@ function ConvState(wrapper, form, params) {
     this.scrollDown = function () {
         $(this.wrapper).find('#messages').stop().animate({ scrollTop: $(this.wrapper).find('#messages')[0].scrollHeight }, 600);
     }.bind(this);
+
+    this.loadAndStoreConversations = function() {
+        if (localStorage.getItem('conversations') === null) {
+            localStorage.setItem('conversations', JSON.stringify([]));
+        }
+        const storedConversations = JSON.parse(localStorage.getItem('conversations'));
+        storedConversations.forEach(conversation => {
+            const message = $('<div class="message ' + conversation.type + '">' + conversation.msg + '<br><span class="timestamp">' + conversation.time + '</span></div>');
+            $(this.wrapper).find("#messages").append(message);
+        });
+    }.bind(this);
 };
 ConvState.prototype.printAnswer = function (answer = '我是ChatGPT, 一个由OpenAI训练的大型语言模型, 我旨在回答并解决人们的任何问题，并且可以使用多种语言与人交流。') {
     setTimeout(function () {
         var messageObj = $(this.wrapper).find('.message.typing');
         answer = marked.parse(answer);
+        var timestamp = new Date().toLocaleTimeString();
+        answer = answer + '<br><span class="timestamp">' + timestamp + '</span>';
         messageObj.html(answer);
         messageObj.removeClass('typing').addClass('ready');
         this.scrollDown();
         $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
+        localStorage.setItem('conversations', JSON.stringify([...JSON.parse(localStorage.getItem('conversations')), { type: 'to', msg: answer, time: timestamp }]));
     }.bind(this), 500);
 };
 ConvState.prototype.sendMessage = function (msg) {
-    var message = $('<div class="message from">' + msg + '</div>');
+    var timestamp = new Date().toLocaleTimeString();
+    var message = $('<div class="message from">' + msg + '<br><span class="timestamp">' + timestamp + '</span></div>');
+    localStorage.setItem('conversations', JSON.stringify([...JSON.parse(localStorage.getItem('conversations')), { type: 'from', msg, time: timestamp }]));
+
 
     $('button.submit').removeClass('glow');
     $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
@@ -79,8 +96,9 @@ ConvState.prototype.sendMessage = function (msg) {
         //appends messages wrapper and newly created form with the spinner load
         $(wrapper).append('<div class="wrapper-messages"><div class="spinLoader"></div><div id="messages"></div></div>');
         $(wrapper).append(inputForm);
-
+        
         var state = new ConvState(wrapper, form, parameters);
+        state.loadAndStoreConversations();
 
         //prints first contact
         $.when($('div.spinLoader').addClass('hidden')).done(function () {
