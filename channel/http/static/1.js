@@ -27,8 +27,13 @@ ConvState.prototype.printAnswer = function (answer = '我是ChatGPT, 一个由Op
     setTimeout(function () {
         var messageObj = $(this.wrapper).find('.message.typing');
         answer = marked.parse(answer);
-        var timestamp = new Date().toLocaleTimeString();
-        answer = answer + '<br><span class="timestamp">' + timestamp + '</span>';
+
+        if (!answer.includes('<span class="timestamp">')) {
+            var timestamp = new Date().toLocaleTimeString();
+            answer = answer + '<br><span class="timestamp">' + timestamp + '</span>';
+            localStorage.setItem('conversations', JSON.stringify([...JSON.parse(localStorage.getItem('conversations')), { type: 'to', msg: answer, time: timestamp }]));
+        }
+        
         messageObj.html(answer);
         messageObj.removeClass('typing').addClass('ready');
         this.scrollDown();
@@ -40,7 +45,6 @@ ConvState.prototype.sendMessage = function (msg) {
     var timestamp = new Date().toLocaleTimeString();
     var message = $('<div class="message from">' + msg + '<br><span class="timestamp">' + timestamp + '</span></div>');
     localStorage.setItem('conversations', JSON.stringify([...JSON.parse(localStorage.getItem('conversations')), { type: 'from', msg, time: timestamp }]));
-
 
     $('button.submit').removeClass('glow');
     $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
@@ -96,7 +100,7 @@ ConvState.prototype.sendMessage = function (msg) {
         //appends messages wrapper and newly created form with the spinner load
         $(wrapper).append('<div class="wrapper-messages"><div class="spinLoader"></div><div id="messages"></div></div>');
         $(wrapper).append(inputForm);
-        
+
         var state = new ConvState(wrapper, form, parameters);
         state.loadAndStoreConversations();
 
@@ -105,7 +109,16 @@ ConvState.prototype.sendMessage = function (msg) {
             var messageObj = $('<div class="message to typing"><div class="typing_loader"></div></div>');
             $(state.wrapper).find('#messages').append(messageObj);
             state.scrollDown();
-            state.printAnswer();
+            if (localStorage.getItem('conversations') === null) {
+                localStorage.setItem('conversations', JSON.stringify([]));
+            }
+            const storedConversations = JSON.parse(localStorage.getItem('conversations'));
+            if (storedConversations.length == 0) {
+                state.printAnswer();
+            }
+            else{
+                state.printAnswer("欢迎回来,有什么我可以帮您的吗？");
+            }
         });
 
         //binds enter to send message
