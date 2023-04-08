@@ -27,6 +27,8 @@ ConvState.prototype.printAnswer = function (answer = '我是ChatGPT, 一个由Op
     setTimeout(function () {
         var messageObj = $(this.wrapper).find('.message.typing');
         answer = marked.parse(answer);
+        
+        var timestamp = new Date().toLocaleTimeString();
         messageObj.html(answer + '<br><span class="timestamp">' + timestamp + '</span>');
         messageObj.removeClass('typing').addClass('ready');
         this.scrollDown();
