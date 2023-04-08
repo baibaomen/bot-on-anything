@@ -27,14 +27,7 @@ ConvState.prototype.printAnswer = function (answer = '我是ChatGPT, 一个由Op
     setTimeout(function () {
         var messageObj = $(this.wrapper).find('.message.typing');
         answer = marked.parse(answer);
-
-        if (!answer.includes('<span class="timestamp">')) {
-            var timestamp = new Date().toLocaleTimeString();
-            answer = answer + '<br><span class="timestamp">' + timestamp + '</span>';
-            localStorage.setItem('conversations', JSON.stringify([...JSON.parse(localStorage.getItem('conversations')), { type: 'to', msg: answer, time: timestamp }]));
-        }
-        
-        messageObj.html(answer);
+        messageObj.html(answer + '<br><span class="timestamp">' + timestamp + '</span>');
         messageObj.removeClass('typing').addClass('ready');
         this.scrollDown();
         $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
