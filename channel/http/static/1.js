@@ -38,13 +38,13 @@ ConvState.prototype.printAnswer = function (answer = '我是ChatGPT, 一个由Op
 };
 ConvState.prototype.sendMessage = function (msg) {
     var timestamp = new Date().toLocaleTimeString();
-    var message = $('<div class="message from">' + msg + '<br><span class="timestamp">' + timestamp + '</span></div>');
+    var message = $('<div class="message from">' + msg + '<br>');
     localStorage.setItem('conversations', JSON.stringify([...JSON.parse(localStorage.getItem('conversations')), { type: 'from', msg, time: timestamp }]));
 
     $('button.submit').removeClass('glow');
     $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
     setTimeout(function () {
-        $(this.wrapper).find("#messages").append(message);
+        $(this.wrapper).find("#messages").append(message + '<span class="timestamp">' + timestamp + '</span></div>');
         this.scrollDown();
     }.bind(this), 100);
 
