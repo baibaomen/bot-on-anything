@@ -18,7 +18,7 @@ function ConvState(wrapper, form, params) {
         }
         const storedConversations = JSON.parse(localStorage.getItem('conversations'));
         storedConversations.forEach(conversation => {
-            const message = $('<div class="message ' + conversation.type + '">' + conversation.msg + '<br><span class="timestamp">' + conversation.time + '</span></div>');
+            const message = $('<div class="message ' + conversation.type + '">' + conversation.msg + '<span class="timestamp">' + conversation.time + '</span></div>');
             $(this.wrapper).find("#messages").append(message);
         });
     }.bind(this);
@@ -29,7 +29,7 @@ ConvState.prototype.printAnswer = function (answer = '我是ChatGPT, 一个由Op
         answer = marked.parse(answer);
         
         var timestamp = new Date().toLocaleTimeString();
-        messageObj.html(answer + '<br><span class="timestamp">' + timestamp + '</span>');
+        messageObj.html(answer + '<span class="timestamp">' + timestamp + '</span>');
         messageObj.removeClass('typing').addClass('ready');
         this.scrollDown();
         $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
@@ -38,7 +38,8 @@ ConvState.prototype.printAnswer = function (answer = '我是ChatGPT, 一个由Op
 };
 ConvState.prototype.sendMessage = function (msg) {
     var timestamp = new Date().toLocaleTimeString();
-    var message = $('<div class="message from">' + msg + '<br><span class="timestamp">' + timestamp + '</span></div>');
+    
+    var message = $('<div class="message from">' + msg + '<span class="timestamp">' + timestamp + '</span></div>');
     localStorage.setItem('conversations', JSON.stringify([...JSON.parse(localStorage.getItem('conversations')), { type: 'from', msg, time: timestamp }]));
 
     $('button.submit').removeClass('glow');
